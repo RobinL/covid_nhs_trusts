@@ -153,4 +153,4 @@ c1 = alt.Chart(regions).mark_line().encode(
 ).properties(title="Daily deaths by region")
 
 with alt.data_transformers.enable('default'):
-    c3.save('daily_deaths.png')
+    c1.save('daily_deaths.png')
