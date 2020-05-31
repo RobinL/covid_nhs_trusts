@@ -16,9 +16,11 @@ other_cols = [c for c in cols if type(c) != datetime.datetime]
 
 df = df.melt(id_vars = other_cols, value_vars=dt_cols)
 
+df = df.rename(columns={"variable": "date", "value": 'num_deaths'})
 
-df = df.sort_values(["Name", "variable"])
-df["rs"] = df.groupby('Name')['value'].rolling(7).sum().reset_index(0,drop=True)
+
+df = df.sort_values(["Name", "date"])
+df["sum_deaths_rolling_week"] = df.groupby('Name')['num_deaths'].rolling(7).sum().reset_index(0,drop=True)
 
 
 f1 = df["Name"].str.lower().str.contains("oxford university")
@@ -32,23 +34,26 @@ df2 = df[f1|f2|f3]
 
 alt.data_transformers.enable('json')
 c1 = alt.Chart(df).mark_line().encode(
-    x='variable',
-    y='rs',
+    x='date',
+    y='sum_deaths_rolling_week',
     color=alt.Color('Name',  scale=None),
-    tooltip=['Name', "variable", "rs"]
+    tooltip=['Name', "date", "sum_deaths_rolling_week"]
 )
 
 c2 = alt.Chart(df2).mark_line().encode(
-    x='variable',
-    y='rs',
+    x='date',
+    y='sum_deaths_rolling_week',
     color='Name',
-    tooltip=['Name', "variable", "rs"]
+    tooltip=['Name', "date", "sum_deaths_rolling_week"]
 )
 
 c3 = (c1 + c2).properties(height=500, width=800)
 
-df.to_csv("clean_nhs_data.csv", index=False)
+
 
 with alt.data_transformers.enable('default'):
     c3.save('chart.png')
 
+df = df.drop("highlight", axis=1)
+df.to_csv("clean_nhs_data.csv", index=False, encoding='utf-8')
+df.to_parquet("clean_nhs_data.parquet", index=False)
