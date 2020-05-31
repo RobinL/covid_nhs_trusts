@@ -33,6 +33,7 @@ jobs:
         pip install selenium
         pip install pandas 
         pip install altair 
+        pip install altair_saver
         pip install xlrd
         pip install beautifulsoup4
 
