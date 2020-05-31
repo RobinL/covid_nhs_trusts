@@ -24,10 +24,12 @@ jobs:
     # Set-up Python
     - name: Install pacakges
       run: |
+        pip install requests
         pip install selenium
         pip install pandas 
         pip install altair 
         pip install xlrd
+        pip install beautifulsoup
 
     # Run R script
     - name: Scrape

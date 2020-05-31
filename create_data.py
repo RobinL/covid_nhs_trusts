@@ -2,7 +2,28 @@ import pandas as pd
 import altair as alt
 import datetime
 
-df = pd.read_excel("https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/05/COVID-19-total-announced-deaths-30-May-2020.xlsx", sheet_name="Tab4 Deaths by trust", skiprows=15, usecols="B:EA")
+
+from bs4 import BeautifulSoup
+import requests
+import re
+
+url = 'https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/covid-19-daily-deaths'
+r = requests.get(url)
+soup = BeautifulSoup(r.text)
+
+a = soup.findAll('a', href=re.compile("total-announced-deaths-"))
+
+for link in a:
+    f1 = "weekly" in link.text
+    f2 = "weekly" in link.attrs["href"]
+    if not (f1 or f2):
+        href = link.attrs["href"]
+        text = link.text
+        
+filename = href.split("/")[-1].replace(".xlsx", "").replace(".xls", "").lower()
+
+df = pd.read_excel(href, sheet_name="Tab4 Deaths by trust", skiprows=15, usecols="B:EA")
+
 
 cols = list(df.columns)
 cols = [c for c in cols if "Unnamed:" not in str(c)]
@@ -55,5 +76,11 @@ with alt.data_transformers.enable('default'):
     c3.save('chart.png')
 
 df = df.drop("highlight", axis=1)
-df.to_csv("clean_nhs_data.csv", index=False, encoding='utf-8')
-df.to_parquet("clean_nhs_data.parquet", index=False)
+df.to_csv("clean_nhs_data_latest.csv", index=False, encoding='utf-8')
+df.to_parquet("clean_nhs_data_latest.parquet", index=False)
+
+
+fn = filename.replace("covid-19-total-announced-deaths-", "")
+
+df.to_csv(f"clean_nhs_data_{fn}.csv", index=False, encoding='utf-8')
+df.to_parquet(f"clean_nhs_data_{fn}.parquet", index=False)
