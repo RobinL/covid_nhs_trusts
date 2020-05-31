@@ -34,7 +34,7 @@ jobs:
         pip install pandas 
         pip install altair 
         pip install xlrd
-        pip install beautifulsoup
+        pip install beautifulsoup4
 
     # Run R script
     - name: Scrape
