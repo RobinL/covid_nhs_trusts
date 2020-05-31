@@ -24,6 +24,7 @@ jobs:
     # Set-up Python
     - name: Install pacakges
       run: |
+        pip install selenium
         pip install pandas 
         pip install altair 
         pip install xlrd
