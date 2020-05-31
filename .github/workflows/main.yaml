@@ -1,0 +1,44 @@
+# Hourly scraping
+
+name: update_nhs_data
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+  schedule:
+    - cron: '0 * * * *'
+  
+    
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # Scraping job
+  autoscrape:
+    # The type of runner that the job will run on
+    runs-on: macos-latest
+
+    # Load repo and install R
+    steps:
+    - uses: actions/checkout@master
+
+    # Set-up Python
+    - name: Install pacakges
+      run: |
+        pip install pandas 
+        pip install altair 
+
+    # Run R script
+    - name: Scrape
+      run: python create_readme.py
+    
+    # Add new files in data folder, commit along with other modified files, push
+    - name: Commit files
+      run: |
+        git config --local user.name github-actions
+        git config --local user.email "actions@github.com"
+        git add chart.png
+        git commit -am "GH ACTION Headlines $(date)"
+        git push origin master
+      env:
+        REPO_KEY: ${{secrets.GITHUB_TOKEN}}
+        username: github-actions
