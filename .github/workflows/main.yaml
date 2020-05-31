@@ -47,8 +47,9 @@ jobs:
       run: |
         git config --local user.name github-actions
         git config --local user.email "actions@github.com"
-        git add chart.png
-        git add clean_nhs_data.csv
+        git add *.png
+        git add *.csv
+        git add *.parquet
         git commit -am "GH ACTION Headlines $(date)"
         git push origin master
       env:
