@@ -26,6 +26,7 @@ jobs:
       run: |
         pip install pandas 
         pip install altair 
+        pip install xlrd
 
     # Run R script
     - name: Scrape
