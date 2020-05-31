@@ -32,6 +32,7 @@ jobs:
         pip install requests
         pip install selenium
         pip install pandas 
+        pip install pyarrow
         pip install altair 
         pip install altair_saver
         pip install xlrd
