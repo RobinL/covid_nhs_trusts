@@ -47,6 +47,8 @@ c2 = alt.Chart(df2).mark_line().encode(
 
 c3 = (c1 + c2).properties(height=500, width=800)
 
+df.to_csv("clean_nhs_data.csv", index=False)
+
 with alt.data_transformers.enable('default'):
     c3.save('chart.png')
 
