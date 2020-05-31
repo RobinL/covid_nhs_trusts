@@ -44,12 +44,24 @@ df = df.sort_values(["Name", "date"])
 df["sum_deaths_rolling_week"] = df.groupby('Name')['num_deaths'].rolling(7).sum().reset_index(0,drop=True)
 
 
+
+
+df.to_csv("clean_nhs_data_latest.csv", index=False, encoding='utf-8')
+df.to_parquet("clean_nhs_data_latest.parquet", index=False)
+
+
+fn = filename.replace("covid-19-total-announced-deaths-", "")
+
+df.to_csv(f"clean_nhs_data_{fn}.csv", index=False, encoding='utf-8')
+df.to_parquet(f"clean_nhs_data_{fn}.parquet", index=False)
+
+
+
 f1 = df["Name"].str.lower().str.contains("oxford university")
 f2 = df["Name"].str.lower().str.contains("west hertfordshire")
 f3 = df["Name"].str.lower().str.contains("cambridge university")
 
-df.loc[f1|f2|f3, "highlight"] = "yes"
-df.loc[~(f1|f2|f3), "highlight"] = "no"
+
 
 df2 = df[f1|f2|f3]
 
@@ -73,14 +85,72 @@ c3 = (c1 + c2).properties(height=500, width=800)
 
 
 with alt.data_transformers.enable('default'):
-    c3.save('chart.png')
+    c3.save('trusts_of_interest.png')
 
-df = df.drop("highlight", axis=1)
-df.to_csv("clean_nhs_data_latest.csv", index=False, encoding='utf-8')
-df.to_parquet("clean_nhs_data_latest.parquet", index=False)
+## Charts for readme
+
+df = df.sort_values(["Name", "date"])
+df["diff_sum_deaths_rolling_week"]  = df.groupby('Name')['sum_deaths_rolling_week'].diff(7)
+
+f1 = df.date == df.date.max()
+most_deaths = list(df[f1].sort_values("sum_deaths_rolling_week", ascending=False).head(5)["Name"])
+
+alt.data_transformers.enable('json')
+f1 = df["Name"].isin(most_deaths)
+df2 = df[f1]
+c1 = alt.Chart(df).mark_line().encode(
+    x='date',
+    y='sum_deaths_rolling_week',
+    color=alt.Color('Name',  scale=None),
+    tooltip=['Name', "date", "sum_deaths_rolling_week"]
+)
+
+c2 = alt.Chart(df2).mark_line().encode(
+    x='date',
+    y='sum_deaths_rolling_week',
+    color='Name',
+    tooltip=['Name', "date", "sum_deaths_rolling_week"]
+)
+
+c3 = (c1 + c2).properties(height=500, width=800, title="NHS trusts with most deaths in past week")
+
+with alt.data_transformers.enable('default'):
+    c3.save('most_deaths_past_week.png')
 
 
-fn = filename.replace("covid-19-total-announced-deaths-", "")
+f1 = df.date == df.date.max()
+greatest_increase = list(df[f1].sort_values("diff_sum_deaths_rolling_week", ascending=False).head(5)["Name"])
 
-df.to_csv(f"clean_nhs_data_{fn}.csv", index=False, encoding='utf-8')
-df.to_parquet(f"clean_nhs_data_{fn}.parquet", index=False)
+
+alt.data_transformers.enable('json')
+f1 = df["Name"].isin(greatest_increase)
+df2 = df[f1]
+c1 = alt.Chart(df).mark_line().encode(
+    x='date',
+    y='sum_deaths_rolling_week',
+    color=alt.Color('Name',  scale=None),
+    tooltip=['Name', "date", "sum_deaths_rolling_week"]
+)
+
+c2 = alt.Chart(df2).mark_line().encode(
+    x='date',
+    y='sum_deaths_rolling_week',
+    color='Name',
+    tooltip=['Name', "date", "sum_deaths_rolling_week"]
+)
+
+c3 = (c1 + c2).properties(height=500, width=800, title="NHS trusts greatest increase in deaths in past week")
+
+with alt.data_transformers.enable('default'):
+    c3.save('greatest_increase_deaths_past_week.png')
+
+regions = df.groupby(["NHS England Region", "date"]).sum().reset_index()
+c1 = alt.Chart(regions).mark_line().encode(
+    x='date',
+    y='num_deaths',
+    color=alt.Color('NHS England Region'),
+    tooltip=['NHS England Region', "date", "num_deaths"]
+).properties(title="Daily deaths by region")
+
+with alt.data_transformers.enable('default'):
+    c3.save('daily_deaths.png')
