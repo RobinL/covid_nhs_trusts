@@ -50,8 +50,15 @@ jobs:
         git add *.png
         git add *.csv
         git add *.parquet
-        git commit -am "GH ACTION Headlines $(date)"
-        git push origin master
+        if [ -z $(git status --porcelain) ];
+        then
+            echo "No changes"
+        else
+            git status --untracked-files=no --porcelain
+            git commit -am "GH ACTION Headlines $(date)"
+            git push origin master
+        fi
+        
       env:
         REPO_KEY: ${{secrets.GITHUB_TOKEN}}
         username: github-actions
