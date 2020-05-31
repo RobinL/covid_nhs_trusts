@@ -20,6 +20,11 @@ jobs:
     # Load repo and install R
     steps:
     - uses: actions/checkout@master
+    
+    - name: Set up Python version
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.7' 
 
     # Set-up Python
     - name: Install pacakges
