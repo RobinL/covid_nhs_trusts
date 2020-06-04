@@ -44,7 +44,7 @@ df = df.sort_values(["Name", "date"])
 df["sum_deaths_rolling_week"] = df.groupby('Name')['num_deaths'].rolling(7).sum().reset_index(0,drop=True)
 
 
-
+df["Up to 01-Mar-20"] = df["Up to 01-Mar-20"].astype(str)
 
 df.to_csv("clean_nhs_data_latest.csv", index=False, encoding='utf-8')
 df.to_parquet("clean_nhs_data_latest.parquet", index=False)
