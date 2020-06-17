@@ -80,6 +80,7 @@ c2 = alt.Chart(df2).mark_line().encode(
     tooltip=['Name', "date", "sum_deaths_rolling_week"]
 )
 
+
 c3 = (c1 + c2).properties(height=500, width=800)
 
 
