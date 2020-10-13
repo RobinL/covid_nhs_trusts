@@ -22,7 +22,7 @@ for link in a:
         
 filename = href.split("/")[-1].replace(".xlsx", "").replace(".xls", "").lower()
 
-df = pd.read_excel(href, sheet_name="Tab4 Deaths by trust", skiprows=15, usecols="B:IA")
+df = pd.read_excel(href, sheet_name="Tab4 Deaths by trust", skiprows=15, usecols="B:ML")
 
 
 cols = list(df.columns)
