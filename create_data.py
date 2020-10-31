@@ -52,8 +52,8 @@ df.to_parquet("clean_nhs_data_latest.parquet", index=False)
 
 fn = filename.replace("covid-19-total-announced-deaths-", "")
 
-df.to_csv(f"clean_nhs_data_{fn}.csv", index=False, encoding='utf-8')
-df.to_parquet(f"clean_nhs_data_{fn}.parquet", index=False)
+# df.to_csv(f"clean_nhs_data_{fn}.csv", index=False, encoding='utf-8')
+# df.to_parquet(f"clean_nhs_data_{fn}.parquet", index=False)
 
 
 
