@@ -51,17 +51,6 @@ df.to_csv("clean_nhs_data_latest.csv", index=False, encoding='utf-8')
 df.to_parquet("clean_nhs_data_latest.parquet", index=False)
 
 
-df['date'] = df['date'].dt.date
-table = pa.Table.from_pandas(df)
-schema = pa.Schema.from_pandas(df)
-
-sink = "clean_nhs_data_latest.arrow"
-
-# Note new_file creates a RecordBatchFileWriter 
-writer = pa.ipc.new_file(sink, schema)
-writer.write(table)
-writer.close()
-
 fn = filename.replace("covid-19-total-announced-deaths-", "")
 
 # df.to_csv(f"clean_nhs_data_{fn}.csv", index=False, encoding='utf-8')
@@ -167,3 +156,17 @@ c1 = alt.Chart(regions).mark_line().encode(
 
 with alt.data_transformers.enable('default'):
     c1.save('daily_deaths.png')
+
+
+
+
+df['date'] = df['date'].dt.date
+table = pa.Table.from_pandas(df)
+schema = pa.Schema.from_pandas(df)
+
+sink = "clean_nhs_data_latest.arrow"
+
+# Note new_file creates a RecordBatchFileWriter 
+writer = pa.ipc.new_file(sink, schema)
+writer.write(table)
+writer.close()
